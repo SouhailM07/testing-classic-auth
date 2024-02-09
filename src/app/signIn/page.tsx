@@ -2,10 +2,13 @@
 // types
 import { inputs } from "@/types";
 // forms
+import { createNewUser } from "@/lib/api";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 // shadcn
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -57,9 +60,23 @@ const SignIn = () => {
     },
   });
   //  Defining a submit handler
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  let { toast } = useToast();
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // start
-    console.log(values);
+    // console.log(values);
+    await createNewUser(values).then((check) => {
+      if (check! > 0) {
+        toast({
+          variant: "destructive",
+          description: "User is already exist !",
+        });
+      } else {
+        toast({
+          title: "Scheduled: Catch up",
+          description: "Account created successfully",
+        });
+      }
+    });
   };
   // Define inputs
   let inputs: inputs[] = [
