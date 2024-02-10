@@ -1,8 +1,11 @@
 "use client";
+// hooks
+import { useRouter } from "next/navigation";
 // types
 import { inputs } from "@/types";
 // forms
-import { userLogin } from "@/lib/api";
+import { avatars } from "@/appwrite";
+import { getUserInformation, userLogin } from "@/lib/api";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -43,6 +46,8 @@ export default function Login_page() {
 }
 
 const Login = () => {
+  let router = useRouter();
+
   // Defining form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -56,6 +61,8 @@ const Login = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     // * start
     // console.log(values);
+    // console.log(avatars.getInitials());
+    await getUserInformation();
     await userLogin(values).then((check) => {
       if (check == 0) {
         console.log(check);
@@ -63,9 +70,12 @@ const Login = () => {
           variant: "destructive",
           description: "User does not exist !",
         });
+      } else if (check == "access") {
+        router.push("/home");
       } else {
         toast({
-          description: "User exist !",
+          variant: "destructive",
+          description: "Wrong Password",
         });
       }
     });

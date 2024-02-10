@@ -1,6 +1,17 @@
+//
 import { account, db } from "@/appwrite";
 
 import { Query, ID } from "appwrite";
+
+export const getUserInformation = async () => {
+  try {
+    const response = await account.get();
+    console.log(response); // This will log the user's information
+    return response;
+  } catch (error) {
+    console.error(error); // Handle error if the request fails
+  }
+};
 
 // ! to create new user
 
@@ -30,7 +41,7 @@ export async function createNewUser(user: any) {
         ID.unique(),
         user.email,
         user.password,
-        user.name,
+        user.name
       );
       // console.log(newAccount);
     }
@@ -55,11 +66,14 @@ export async function userLogin(user) {
     }
     // login
     else {
-      let logedUser: any = await account.createEmailSession(
-        user.email,
-        user.password
-      );
-
+      let logedUser: any = await account
+        .createEmailSession(user.email, user.password)
+        .then(() => {
+          // let router = useRouter();
+          // router.push("/home");
+          return "access";
+        });
+      return logedUser;
       // logedUser.then(
       //   function (response) {
       //     console.log(response); // Success
@@ -68,7 +82,6 @@ export async function userLogin(user) {
       //     console.log(error); // Failure
       //   }
       // );
-      console.log(logedUser);
     }
     // check this later
     // await account.deleteSession("current");
