@@ -29,8 +29,8 @@ export async function createNewUser(user: any) {
       const newAccount = await account.create(
         ID.unique(),
         user.email,
+        user.password,
         user.name,
-        user.password
       );
       // console.log(newAccount);
     }
@@ -48,11 +48,30 @@ export async function userLogin(user) {
       process.env.NEXT_PUBLIC_USERS_COLLECTION_ID!,
       [Query.equal("email", [user.email])]
     );
-    if (!userExist.total) {
+    console.log(userExist);
+    if (userExist.total < 1) {
+      console.log("it sending");
       return 0;
     }
     // login
-    await account.createEmailSession(user.email, user.password);
+    else {
+      let logedUser: any = await account.createEmailSession(
+        user.email,
+        user.password
+      );
+
+      // logedUser.then(
+      //   function (response) {
+      //     console.log(response); // Success
+      //   },
+      //   function (error) {
+      //     console.log(error); // Failure
+      //   }
+      // );
+      console.log(logedUser);
+    }
+    // check this later
+    // await account.deleteSession("current");
   } catch (error) {
     console.log(error);
   }
